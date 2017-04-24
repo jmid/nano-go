@@ -1,0 +1,4 @@
+[submodule "codemirror-5.5.0"]
+	path = codemirror-5.5.0
+	url = https://github.com/codemirror/CodeMirror.git
+	branch = origin/5.5.0
