@@ -1,0 +1,5 @@
+true: -traverse, use_menhir
+<src>: traverse
+<src/gotokens.mly> : unused_tokens
+<src/gotokens.mlypack> : only_tokens
+<src/goparser.mlypack> : external_tokens(Gotokens)

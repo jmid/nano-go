@@ -1,0 +1,20 @@
+#directory "_build/src";;
+print_string "loading .ocamlinit\n";;
+#use "topfind";;
+#load "ast.cmo";;
+#load "last.cmo";;
+#load "golexer.cmo";;
+#load "goparser.cmo";;
+#load "frontend.cmo";;
+#load "interval.cmo";;
+#load "absstore.cmo";;
+#load "intstore.cmo";;
+#load "redpairdom.cmo";;
+#load "pairdom.cmo";;
+#load "proddom.cmo";;
+#load "cache.cmo";;
+#load "regexpdom.cmo";;
+#load "analyzer.cmo";;
+#load "warn.cmo";;
+#load "main.cmo";;
+(*print_endline (string_of_bool !Sys.interactive);;*)

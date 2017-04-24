@@ -1,0 +1,111 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Synchronous nano-go process analyzer</title>
+    <script src="jsbridge.js"></script>
+
+    <!-- CodeMirror -->
+    <link rel="stylesheet" href="lib/codemirror-3.24/lib/codemirror.css">
+    <link rel="stylesheet" href="lib/codemirror-3.24/theme/eclipse.css">
+    <link rel="stylesheet" href="lib/codemirror-3.24/addon/lint/lint.css">
+    <link rel="stylesheet" href="lib/codemirror-3.24/doc/docs.css">
+
+    <script src="lib/codemirror-3.24/lib/codemirror.js"></script>
+    <script src="lib/codemirror-3.24/addon/lint/lint.js"></script>
+    <script src="lib/codemirror-3.24/addon/selection/active-line.js"></script>
+    <script src="lib/codemirror-3.24/mode/go/go.js"></script>    
+<!--    <script src="lib/codemirror-3.24/mode/clike/clike.js"></script>   -->
+
+    <style>
+   .CodeMirror {
+        font-size: 12pt;
+        height: auto;
+   }
+   .CodeMirror-scroll {
+        overflow-y: hidden;
+//        overflow-x: auto;
+   }
+    </style>
+
+  </head>
+
+  <body>
+<h1>Synchronous Nano-Go Process Analyzer</h1>
+
+<div style="padding: 20px; border: 1px solid #000000; width: 95%;">
+
+      <!-- Left-hand side editor -->
+      <div style="display:inline-block; vertical-align:top; width:50%;">
+	<h3>Input processes:</h3>
+	<p>
+	  <form align="left" style="overflow:auto;">
+	    <textarea id="texteditor" name="texteditor">package main
+
+func main() { 
+	ch := make(chan int);
+	go func() { ch <-42 }()
+	var x int;
+	x = <- ch;
+	print(x)
+} </textarea>
+	  </form>
+	</p>
+	<p>
+	  <button type="button" id="analyze">Analyze</button>
+	  &nbsp;
+	  <select id="prog-select">
+	    <option value="send-recv">send-receive</option>
+	    <option value="nondet">non-determinism</option>
+	    <option value="order">order</option>
+	    <option value="constant">constant</option>
+	    <option value="deadlock">deadlock</option>
+	    <option value="chains">chains</option>
+	    <option value="loop">loop</option>
+	    <option value="loopext">loopext</option>
+	    <option value="nontermination">non-termination</option>
+	  </select>
+	  &nbsp;
+	</p>
+      </div>
+
+      <div style="display:inline-block; vertical-align:top; padding: 0px 50px; width:40%;">
+	<h3>Supported syntax:</h3>
+	<pre>
+       e ::= i | ( e ) | x | - e
+           | e + e | e - e | e * e | e % e
+       b ::= true | false | ! b | ( b )
+           | e == e | e <= e | e < e | b && b
+recvstmt ::= x = <- ch | <- ch
+sendstmt ::= ch <- e
+    stmt ::= x = e
+           | recvstmt
+           | sendstmt
+           | if b block else block
+           | for [test] block
+           | select { selcase* }
+           | print(e)
+   stmts ::= stmt [;]
+           | stmt ; stmts
+           | { stmts }
+   block ::= { stmts } | {}
+ selcase ::= case recvstmt : [stmts]
+           | case sendstmt : [stmts]
+  chdecl ::= x := make(chan int)
+    func ::= go func() { [body] } ()
+    body ::= var x int [;] body
+           | stmts
+    prog ::= package main
+             func main() { chdecl+ func+ body }
+        </pre>
+      </div>
+      <div style="clear:both"></div>
+      
+   <p>
+     <b>Result</b>: <i><div id="result"> </div></i>
+   </p>
+</div>
+
+   <script src="index.js"></script>
+  </body>
+</html>
