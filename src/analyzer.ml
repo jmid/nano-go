@@ -100,6 +100,39 @@ struct
 
 		let rec close r =
 		  let (writepart,readpart) as part = range r in
+		  let part' =
+		    Chandom.fold_partition
+		      (fun (writepart,readpart) eqcl -> match eqcl with
+			| Chandom.FstEqCl eq1 -> (* a write *)
+			  let _writepart',readpart' =
+			    range (d (Chandom.pair(WritePair.repr eq1, ReadPair.bot)) r) in
+			  (WritePair.overlay_partitions writepart readpart', readpart)
+			         (* refine writepart with that of consecutive reads *)
+			| Chandom.SndEqCl eq2 -> (* a read  *)
+			  let writepart',_readpart' =
+			    range (d (Chandom.pair(WritePair.bot, ReadPair.repr eq2)) r) in
+			  (writepart, ReadPair.overlay_partitions readpart writepart')
+			         (* refine readpart with that of consecutive writes *))
+		      part part in
+		  let r' =
+		    Chandom.fold_partition (* now close LVRE based on refined part *)
+		      (fun acc eqcl -> match eqcl with
+			| Chandom.FstEqCl eq1 -> (* a write *)
+			  let wr_atom = WritePair.repr eq1 in
+			  let dwr_r = d (Chandom.pair(WritePair.bot, wr_atom))
+			                (d (Chandom.pair(wr_atom, ReadPair.bot)) r) in
+			  union (acc, dwr_r)
+			| Chandom.SndEqCl eq2 -> (* a read  *)
+			  let rd_atom = ReadPair.repr eq2 in
+			  let drw_r = d (Chandom.pair(rd_atom, ReadPair.bot))
+			                (d (Chandom.pair(WritePair.bot, rd_atom)) r) in
+			  union (acc, drw_r)) r part' in
+		  if eq r r'
+		  then r
+		  else close r'
+		  
+(*		let rec close r =
+		  let (writepart,readpart) as part = range r in
 		  let refpart = ReadPair.overlay_partitions writepart readpart in
 		  let r' = ReadPair.fold_partition
   	 	             (fun acc eqcl(*(cheqc,valeqc)*) ->
@@ -115,7 +148,7 @@ struct
 				   union (union (acc, drw_r), dwr_r))) r refpart in
 		  if eq r r'
 		  then r
-		  else close r'
+		  else close r' *)
   end
 
   let pp = ref false
