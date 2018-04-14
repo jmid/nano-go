@@ -11,7 +11,7 @@ print_string "loading .ocamlinit\n";;
 #load "intstore.cmo";;
 #load "redpairdom.cmo";;
 #load "pairdom.cmo";;
-#load "proddom.cmo";;
+(*#load "proddom.cmo";;*)
 #load "cache.cmo";;
 #load "regexpdom.cmo";;
 #load "analyzer.cmo";;
