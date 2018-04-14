@@ -3,14 +3,14 @@ module LA = Last
 type warning = Lexing.position * string
 
 let unreachable pos (en,_) =
-  let (sigma,h,f) = Analyzer.Intanalyzer.Cache.lookup en pos.LA.label in
+  let (sigma,f) = Analyzer.Intanalyzer.Cache.lookup en pos.LA.label in
   if Intstore.leq sigma Intstore.bot
   then [ (pos.LA.lex_pos, "Line unreachable") ]
   else []
 
 let communication pos bodylab msg (en,_) =
-  let (sigma,_,_) = Analyzer.Intanalyzer.Cache.lookup en pos.LA.label in
-  let (sigma',_,_) = Analyzer.Intanalyzer.Cache.lookup en bodylab in
+  let (sigma,_) = Analyzer.Intanalyzer.Cache.lookup en pos.LA.label in
+  let (sigma',_) = Analyzer.Intanalyzer.Cache.lookup en bodylab in
   if not (Intstore.leq sigma Intstore.bot) (* comm is reachable *)
     && (Intstore.leq sigma' Intstore.bot)  (* but body is not   *)
   then [ (pos.LA.lex_pos, msg) ]
