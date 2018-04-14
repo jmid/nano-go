@@ -196,6 +196,45 @@ let mult i1 i2 = match i1,i2 with
 	        | Bound b -> UBound b
 	        | PosInf  -> PInf)) (*use smartconst*)
 
+(*  rem : elem -> elem -> elem  *)
+let rem i1 i2 = match i1,i2 with
+  | Bot, _ -> Bot
+  | _, Bot -> Bot
+  | Interval (l1,u1), Interval (l2,u2) ->
+    (* split i1 into a neg. and a pos. interval, handle both separately, join results *)
+    let _i1_low  = meet (Interval (MInf,UBound (-1))) i1 in
+    let i1_high = meet (Interval (LBound 0,PInf)) i1 in
+    (* normalize i2 to a non-neg interval *)
+    let i2' = (match l2,u2 with
+                | MInf, PInf         -> Interval (LBound 0,PInf)
+		| MInf, UBound u     -> Interval (LBound (if u<0 then u else 0), PInf)
+		| LBound l, PInf     -> Interval (LBound (if l<0 then 0 else l), PInf)
+		| LBound l, UBound u -> if u<0 then Interval (LBound (-u), UBound (-l))
+ 		                         else if l<0 then Interval (LBound 0, UBound (max (-l) u))
+					  else i2) in (* [l2;u2] with u>=0, l>=0 *)
+    let _low_sol  = ( (* solve for i1_low i2' ... *) ) in
+    let high_sol = (* solve for i1_high i2' ... *)
+      (match i1_high,i2' with
+	| Bot, _ -> Bot
+	| _, Bot -> Bot
+	| Interval (l1,u1), Interval (l2,u2) -> (match (l1,u1),(l2,u2) with
+	    | (LBound l1,UBound u1), (LBound l2,UBound u2) when l1=u1 && l2=u2 ->
+	      if l2 <> 0 then const (l1 mod l2) else Bot
+(*	    | (LBound l1,UBound u1), _ when l1=u1 -> (* i1 is const *)
+	    | _, (LBound l2,UBound u2) when l2=u2 -> (* i2 is const *) i1 *)
+	    | _, (_,UBound u2) -> Interval (LBound 0, ub_min u1 (UBound (u2-1)))
+	    | _, (_,PInf)      -> Interval (LBound 0, u1))) in
+  (*join low_sol*)
+      high_sol
+(* min u1,u2-1 is a general upper bound *)
+(* l1,if l2 = 0 then l2 else l2-1 is a general lower bound *)
+(*  [1;10] mod [4;4] = [0;2]  since 4,8 \in [1;10], 10 mod 4 = 2 *)
+(* [23;23] mod [1;5] = [0;3] *)
+(*  [1;23] mod [1;5] = *)
+(* [10;10] mod [2;9] = [0,1,2,0,4,3,2,1] *)
+(*  [0;10] mod [0;10] *)
+(* mod by 0: error, hence [0;10] mod [1;10] *)
+      
 type equiv_class = lowerbound * upperbound
 type partition = equiv_class list (* non-empty, spans full range *)
 
