@@ -100,23 +100,20 @@ var orderprog = "package main\n" +
 var constantprog = "package main\n" +
     "\n" +
     "func main() {\n" +
-    "	ch0 := make(chan int);\n" +
     "	ch1 := make(chan int);\n" +
+    "	ch2 := make(chan int);\n" +
     "	go func () {\n" +
-    "		var y int;\n" +
-    "		ch0 <-0;\n" +
-    "		for {\n" +
-    "			y = <-ch1;\n" +
-    "			ch0 <- (y-1);\n" +
-    "//			print(y)\n" +
-    "		}\n" +
+    "		ch1 <-1;\n" +
+    "		ch2 <-2;\n" +
     "	}()\n" +
-    "	var x int;\n" +
-    "	for {\n" +
-    "		x = <-ch0;\n" +
-    "		ch1 <- (x+1);\n" +
-    "//		print(x)\n" +
-    "	}\n" +
+    "	go func () {\n" +
+    "		var x int;\n" +
+    "		x = <-ch1;\n" +
+    "		ch2 <- x+1;\n" +
+    "	}()\n" +
+    "	var y int;\n" +
+    "	y = <-ch2;\n" +
+    "//	print(y)\n" +
     "}";
 
 var deadlockprog = "package main\n" +
