@@ -133,6 +133,27 @@ var deadlockprog = "package main\n" +
     "	print(y)\n" +
     "}";
 
+var deadlockgopherprog = "package main\n" +
+    "\n" +
+    "func main() {\n" +
+    "	ch := make(chan int)\n" +
+    "	done := make(chan int)\n" +
+    "	go func() { ch <- 42 }() // Send\n" +
+    "	go func() {              // Recv1\n" +
+    "		var val int;\n" +
+    "		val = <-ch;\n" +
+    "		done <- val;\n" +
+    "	}()\n" +
+    "	go func() {              // Recv2\n" +
+    "		var val int;\n" +
+    "		val = <-ch;\n" +
+    "		done <- val;\n" +
+    "	}()\n" +
+    "	go func() { for {} }()   // Work\n" +
+    "	<-done;\n" +
+    "	<-done\n" +
+    "}";
+
 var chainsprog = "package main\n" +
     "\n" +
     "func main() {\n" +
@@ -216,7 +237,8 @@ function progSelect() {
     else if (choice == 'nondet')   { editor.setValue(nondetprog); }
     else if (choice == 'order')    { editor.setValue(orderprog); }
     else if (choice == 'constant') { editor.setValue(constantprog); }
-    else if (choice == 'deadlock') { editor.setValue(deadlockprog); }
+    else if (choice == 'deadlock-simple') { editor.setValue(deadlockprog); }
+    else if (choice == 'deadlock-gopherlyzer') { editor.setValue(deadlockgopherprog); }
     else if (choice == 'chains')   { editor.setValue(chainsprog); }
     else if (choice == 'loop')     { editor.setValue(loopprog); }
     else if (choice == 'loopext')  { editor.setValue(loopextprog); }

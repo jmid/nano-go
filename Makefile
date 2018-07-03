@@ -1,6 +1,9 @@
 byte:
 	ocamlbuild -use-ocamlfind -yaccflag -v src/main.byte
 
+native:
+	ocamlbuild -use-ocamlfind -yaccflag -v src/main.native
+
 top:
 	ocamlbuild -use-ocamlfind src/main.top
 
