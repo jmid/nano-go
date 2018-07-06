@@ -649,7 +649,7 @@ struct
     let en_cache,_ = res in
     (*let coll_h',_  = extract_stmt_hist ls en_cache in*)
     let pre,full = extract_stmt_hist ls en_cache in
-    let coll_h'  = R.union (pre,full) in
+    let coll_h'  = if R.leq full pre then pre else R.union (pre,full) in
     (*let _,coll_h',_  = Cache.fold (fun i triple acc -> Proddom.join triple acc) (fst res) in *)
     if pp
     then
